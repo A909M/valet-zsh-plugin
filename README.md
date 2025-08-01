@@ -36,7 +36,7 @@ A comprehensive Zsh plugin that works with both **[Laravel Valet (Official)](htt
 ### Oh My Zsh
 
 ```bash
-git clone https://github.com/yourusername/valet-zsh-plugin.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/valet
+git clone https://github.com/a909m/valet-zsh-plugin.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/valet
 ```
 
 Add `valet` to your plugins in `~/.zshrc`:
@@ -48,18 +48,18 @@ plugins=(... valet)
 
 ```bash
 # Add to ~/.zshrc
-zinit load "yourusername/valet-zsh-plugin"
+zinit load "a909m/valet-zsh-plugin"
 
 # Or with lazy loading for better performance
 zinit ice wait lucid has'valet'
-zinit load "yourusername/valet-zsh-plugin"
+zinit load "a909m/valet-zsh-plugin"
 ```
 
 ### Antigen
 
 ```bash
 # Add to ~/.zshrc
-antigen bundle yourusername/valet-zsh-plugin
+antigen bundle a909m/valet-zsh-plugin
 antigen apply
 ```
 
@@ -67,13 +67,13 @@ antigen apply
 
 ```bash
 # Add to ~/.zshrc
-zplug "yourusername/valet-zsh-plugin", defer:2
+zplug "a909m/valet-zsh-plugin", defer:2
 ```
 
 ### Manual Installation
 
 ```bash
-git clone https://github.com/yourusername/valet-zsh-plugin.git ~/.zsh/plugins/valet
+git clone https://github.com/a909m/valet-zsh-plugin.git ~/.zsh/plugins/valet
 echo "source ~/.zsh/plugins/valet/valet.plugin.zsh" >> ~/.zshrc
 ```
 
