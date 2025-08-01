@@ -203,9 +203,6 @@ vlog nginx    # View Nginx error logs from /var/log/nginx/
 vlog php-fpm  # View PHP-FPM logs (auto-detects active version)
 ```
 
-## ⚙️ Configuration
-
-Customize the plugin behavior with environment variables in your `~/.zshrc`:
 
 ```bash
 # Disable loading message
@@ -231,15 +228,21 @@ export VALET_PLUGIN_DEFAULT_TLD=test
 - Supports `valet status` command
 - Includes database management commands (`valet db`)
 - Detects multiple PHP-FPM versions automatically
-- Uses `xdg-open` for browser launching plugin is git-cloned)
+- Uses `xdg-open` for browser launching
+
+## ⚙️ Configuration
+
+Customize the plugin behavior with environment variables in your `~/.zshrc`:
+```bash
+# Disable loading message
+export VALET_PLUGIN_SILENT_LOAD=true
+
+# Enable auto-updates (if plugin is git-cloned)
 export VALET_PLUGIN_AUTO_UPDATE=true
 
 # Set default TLD for valet-open function
 export VALET_PLUGIN_DEFAULT_TLD=test
 ```
-
-## 🎨 Customization
-
 ### Adding Custom Functions
 
 Extend the plugin by adding your own functions to `~/.zshrc`:
