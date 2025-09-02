@@ -243,9 +243,6 @@ _valet_load_full_plugin() {
                     which-php)
                         _valet_linked_sites
                         ;;
-                    db)
-                        _arguments '1:action:(create drop list connect)'
-                        ;;
                     fetch-share-url)
                         _valet_linked_sites
                         ;;
@@ -312,7 +309,6 @@ _valet_load_full_plugin() {
             )
         else
             commands+=(
-                'db:Create, drop, or list databases'
                 'status:Show Valet service status'
             )
         fi
