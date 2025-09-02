@@ -249,6 +249,25 @@ _valet_load_full_plugin() {
                     on-latest-version)
                         # No additional arguments
                         ;;
+                    list)
+                        # No additional arguments
+                        ;;
+                    diagnose)
+                        # No additional arguments
+                        ;;
+                    forget)
+                        _valet_parked_directories
+                        ;;
+                    directory-listing)
+                        if [[ "$VALET_OS" == "macOS" ]]; then
+                            _arguments '1:setting:(on off)'
+                        fi
+                        ;;
+                    port)
+                        if [[ "$VALET_OS" == "Linux" ]]; then
+                            _arguments '1:port:'
+                        fi
+                        ;;
                     # macOS specific commands
                     use)
                         if [[ "$VALET_OS" == "macOS" ]]; then
@@ -297,6 +316,9 @@ _valet_load_full_plugin() {
             'php:Switch between PHP versions'
             'which-php:Display the PHP version for a site'
             'on-latest-version:Check if Valet is on the latest version'
+            'list:Display all available Valet commands'
+            'diagnose:Output diagnostic information for debugging'
+            'forget:Remove a parked directory from the parked directory list'
         )
         
         commands=("${common_commands[@]}")
@@ -306,10 +328,12 @@ _valet_load_full_plugin() {
             commands+=(
                 'use:Set the PHP version for the current site'
                 'loopback:Create a loopback alias'
+                'directory-listing:Control directory listing behavior'
             )
         else
             commands+=(
                 'status:Show Valet service status'
+                'port:Change or view Nginx port'
             )
         fi
         
@@ -318,28 +342,17 @@ _valet_load_full_plugin() {
 
     # Helper functions for completion (cross-platform)
     _valet_linked_sites() {
-        local sites config_paths
-        
-        # Check different possible config locations
-        config_paths=(
-            ~/.config/valet/config.json  # Linux
-            ~/.valet/config.json         # Linux alternative
-            ~/.composer/vendor/laravel/valet/cli/stubs/config.json  # macOS
-        )
-        
-        for config_path in "${config_paths[@]}"; do
-            if [[ -f "$config_path" ]]; then
-                sites=(${(f)"$(valet links 2>/dev/null | grep -E '^\s*[a-zA-Z0-9]' | awk '{print $1}' | grep -v '^$')"})
-                _describe 'linked sites' sites
-                return
-            fi
-        done
+        local sites
+        if command -v valet >/dev/null 2>&1; then
+            sites=(${(f)"$(valet links 2>/dev/null | grep -E '^\|' | grep -v -E '^[[:space:]]*\|[[:space:]]*Site[[:space:]]*\|' | awk -F'|' '{gsub(/^ *| *$/, "", $2); print $2}' | grep -v '^$')"})
+            _describe 'linked sites' sites
+        fi
     }
 
     _valet_parked_directories() {
         local paths
         if command -v valet >/dev/null 2>&1; then
-            paths=(${(f)"$(valet paths 2>/dev/null | grep -v '^$')"})
+            paths=(${(f)"$(valet paths 2>/dev/null | grep -E '^\s*"/' | sed 's/^[[:space:]]*"//; s/"[[:space:]]*,*$//')"})
             _describe 'parked directories' paths
         fi
     }
@@ -347,7 +360,7 @@ _valet_load_full_plugin() {
     _valet_secured_sites() {
         local sites
         if command -v valet >/dev/null 2>&1; then
-            sites=(${(f)"$(valet links 2>/dev/null | grep 'https://' | awk '{print $1}' | grep -v '^$')"})
+            sites=(${(f)"$(valet links 2>/dev/null | grep -E '^\|' | grep -v -E '^[[:space:]]*\|[[:space:]]*Site[[:space:]]*\|' | grep 'https://' | awk -F'|' '{gsub(/^ *| *$/, "", $2); print $2}' | grep -v '^$')"})
             _describe 'secured sites' sites
         fi
     }
@@ -355,7 +368,7 @@ _valet_load_full_plugin() {
     _valet_unsecured_sites() {
         local sites
         if command -v valet >/dev/null 2>&1; then
-            sites=(${(f)"$(valet links 2>/dev/null | grep 'http://' | awk '{print $1}' | grep -v '^$')"})
+            sites=(${(f)"$(valet links 2>/dev/null | grep -E '^\|' | grep -v -E '^[[:space:]]*\|[[:space:]]*Site[[:space:]]*\|' | grep 'http://' | awk -F'|' '{gsub(/^ *| *$/, "", $2); print $2}' | grep -v '^$')"})
             _describe 'unsecured sites' sites
         fi
     }
@@ -363,7 +376,7 @@ _valet_load_full_plugin() {
     _valet_isolated_sites() {
         local sites
         if command -v valet >/dev/null 2>&1; then
-            sites=(${(f)"$(valet isolated 2>/dev/null | grep -E '^\s*[a-zA-Z0-9]' | awk '{print $1}' | grep -v '^$')"})
+            sites=(${(f)"$(valet isolated 2>/dev/null | grep -E '^\s*[a-zA-Z0-9]' | grep -v -E '^(\+|-|\|)' | awk '{print $1}' | grep -v '^$')"})
             _describe 'isolated sites' sites
         fi
     }
@@ -479,11 +492,11 @@ valet-status() {
     echo "🌐 Domain: $domain"
     
     # Show linked sites count
-    local links_count=$(valet links 2>/dev/null | wc -l)
+    local links_count=$(valet links 2>/dev/null | grep -E '^\|' | grep -v -E '^[[:space:]]*\|[[:space:]]*Site[[:space:]]*\|' | wc -l)
     echo "🔗 Linked sites: $links_count"
     
     # Show parked paths count
-    local paths_count=$(valet paths 2>/dev/null | wc -l)
+    local paths_count=$(valet paths 2>/dev/null | grep -E '^\s*"/' | wc -l)
     echo "📁 Parked paths: $paths_count"
     
     # Show PHP version if available
