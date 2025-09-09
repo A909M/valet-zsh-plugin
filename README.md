@@ -88,14 +88,14 @@ source ~/.zshrc
 
 | Alias | Command | Description |
 |-------|---------|-------------|
-| `vs` | `valet-status` | Show comprehensive Valet status |
-| `vo` | `valet-open` | Open current site in browser |
-| `vlh` | `valet-link-here` | Link current directory |
-| `vsh` | `valet-secure-here` | Secure current site with HTTPS |
+| `vs` | `@valet-status` | Show comprehensive Valet status |
+| `vo` | `@valet-open` | Open current site in browser |
+| `vlh` | `@valet-link-here` | Link current directory |
+| `vsh` | `@valet-secure-here` | Secure current site with HTTPS |
 | `vl` | `valet links` | List all linked sites |
 | `vp` | `valet paths` | List all parked paths |
-| `vlog` | `valet-logs` | View service logs |
-| `vinfo` | `valet-info` | Show environment information |
+| `vlog` | `@valet-logs` | View service logs |
+| `vinfo` | `@valet-info` | Show environment information |
 
 ### Examples
 
@@ -127,7 +127,7 @@ valet unsecure <TAB>  # Shows secured sites
 
 ### Helper Functions
 
-#### `valet-status` (`vs`)
+#### `@valet-status` (`vs`)
 Displays a comprehensive overview of your Valet installation with OS-specific service detection:
 
 **macOS Output:**
@@ -160,10 +160,10 @@ Plugin Manager: zinit
 🐘 PHP: PHP 8.1.2
 ```
 
-#### `valet-open` (`vo`)
+#### `@valet-open` (`vo`)
 Opens the current directory's site in your default browser. Automatically detects HTTP/HTTPS and handles different browsers across platforms (uses `open` on macOS, `xdg-open` on Linux).
 
-#### `valet-info` (`vinfo`)
+#### `@valet-info` (`vinfo`)
 Shows detailed environment information:
 ```
 🔍 Valet Environment Information:
@@ -181,14 +181,14 @@ PHP Binary: /opt/homebrew/bin/php
 PHP Version: PHP 8.2.0 (cli)
 ```
 
-#### `valet-link-here` (`vlh`)
+#### `@valet-link-here` (`vlh`)
 Links the current directory to Valet. Optionally accepts a custom name:
 ```bash
 vlh                    # Links as current directory name
 vlh custom-name        # Links as 'custom-name'
 ```
 
-#### `valet-logs` (`vlog`)
+#### `@valet-logs` (`vlog`)
 View real-time logs for Valet services with OS-specific paths:
 
 **macOS:**
@@ -249,15 +249,15 @@ Extend the plugin by adding your own functions to `~/.zshrc`:
 
 ```bash
 # Custom function to quickly restart all Valet services
-valet-restart-all() {
+@valet-restart-all() {
     echo "🔄 Restarting all Valet services..."
     valet restart
     echo "✅ All services restarted!"
 }
 
 # Quick database creation for current project (Linux only)
-valet-db-create() {
-    if [[ "$VALET_OS" == "Linux" ]]; then
+@valet-db-create() {
+    if [[ "${Plugins[valet_os]:-$VALET_OS}" == "Linux" ]]; then
         local db_name=${1:-$(basename $PWD)}
         echo "🗄️  Creating database: $db_name"
         valet db create "$db_name"
@@ -267,9 +267,9 @@ valet-db-create() {
 }
 
 # Platform-specific PHP switching
-valet-switch-php() {
+@valet-switch-php() {
     local version=$1
-    if [[ "$VALET_OS" == "macOS" ]]; then
+    if [[ "${Plugins[valet_os]:-$VALET_OS}" == "macOS" ]]; then
         valet use "$version"
     else
         valet php "$version"
@@ -403,6 +403,15 @@ When adding new features:
 - Ensure backward compatibility
 
 ## 📝 Changelog
+
+### v1.2.0 (2025-01-09)
+- 🎯 **Standards Compliance**: Full compliance with Zsh Plugin Standard and Awesome Zsh Plugins guidelines
+- 🔧 **Improved Function Naming**: API functions now use `@` prefix, private functions use `.` prefix
+- 🧹 **Reduced Global Pollution**: Moved to `Plugins` hash for better namespace management
+- 🔄 **Plugin Unload Support**: Added unload function for plugin managers that support it
+- 🛡️ **Better Error Handling**: Fixed completion loading issues in minimal environments
+- ⚡ **Standard Zsh Options**: Added recommended Zsh options for better compatibility
+- 📊 **Plugin Metadata**: Added version and description for plugin manager integration
 
 ### v1.0.0 (2025-08-01)
 - Initial release with universal compatibility
